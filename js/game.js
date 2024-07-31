@@ -25,7 +25,7 @@ function animate() {
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
     // Desenha o sprite `player` no canvas
-    player.draw();
+    player.update();
 
     // Obtém o tempo atual em milissegundos
     let currentTime = performance.now();
