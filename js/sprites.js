@@ -22,9 +22,10 @@ class Sprite {
     // Método para atualizar a posição do sprite
     update() {
         // Verifica se o sprite atingiu o chão do canvas
-        if (this.position.y + this.height >= canvas.height) {
+        if (this.position.y + this.height > canvas.height) {
             // Ajusta a posição y para o chão do canvas
-            this.velocity.y = canvas.height - (this.position.y + this.height);
+            this.position.y = canvas.height - this.height;
+            this.velocity.y = 0
         } else {
             // Aplica a gravidade à velocidade y
             this.velocity.y += gravity;
@@ -39,18 +40,54 @@ class Sprite {
     }
 }
 
+class Fighter extends Sprite {
+    constructor({
+        position,
+        velocity,
+        dimensions
+    }) {
+        super({
+            position,
+            velocity,
+            dimensions
+        })
+
+        this.velocity = velocity
+        this.width = dimensions.width
+        this.height = dimensions.height
+        this.lastKeyPressed
+    }
+}
+
+
 // Cria uma instância do sprite `player` na posição (100, 100) com largura de 50 e altura de 150
-const player = new Sprite({
+const player = new Fighter({
     position: {
         x: 100,
-        y: 100
+        y: 0
     },
     dimensions: {
         width: 50,
         height: 150
     },
     velocity: {
-        x: 2,
+        x: 0,
+        y: 10
+    }
+});
+
+const player2 = new Fighter({
+    position: {
+        x: 500,
+        y: 20
+    },
+    dimensions: {
+        width: 50,
+        height: 200
+    },
+    velocity: {
+        x: 0,
         y: 0
     }
 });
+

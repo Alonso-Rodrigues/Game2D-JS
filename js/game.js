@@ -26,7 +26,8 @@ function animate() {
 
     // Desenha o sprite `player` no canvas
     player.update();
-
+    // player2.update();
+    handleControls();
     // Obtém o tempo atual em milissegundos
     let currentTime = performance.now();
     // Calcula o tempo decorrido desde o último quadro em segundos
