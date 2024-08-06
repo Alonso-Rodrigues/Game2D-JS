@@ -11,7 +11,8 @@ const keys = {
         hold: false
     },
     space: {
-        pressed: false
+        pressed: false,
+        hold: false
     }
 }
 
@@ -61,15 +62,21 @@ window.addEventListener("keyup", e => {
             keys.w.pressed = false
             keys.w.hold = false
             break
+        case "z":
+        case " ":
+            keys.space.pressed = false
+            keys.space.hold = false
+            break
     }
 })
 
 // Função para lidar com os controles do jogador
 function handleControls() {
-    movimento()
+    moviments()
+    attacks()
 
     // Função para atualizar a posição do jogador com base nas teclas pressionadas
-    function movimento() {
+    function moviments() {
         player.velocity.x = 0
         if (keys.a.pressed && ["a", "ArrowLeft"].includes(player.lastKeyPressed)) {
             player.velocity.x = -1.5 * 3.4 // Movimenta o jogador para a esquerda
@@ -80,6 +87,13 @@ function handleControls() {
         if (keys.w.pressed && !keys.w.hold) {
             player.jump()
             keys.w.hold = true
+        }
+    }
+
+    function attacks() {
+        if (keys.space.pressed && !keys.space.hold) {
+            player.attack()
+            keys.space.hold = true
         }
     }
 }

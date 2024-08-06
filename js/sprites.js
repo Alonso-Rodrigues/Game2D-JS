@@ -16,7 +16,7 @@ class Sprite {
     draw() {
         ctx.fillStyle = "white"; // Define a cor do sprite
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height); // Desenha um retângulo preenchido com a cor definida
-        if (this.attackBox) {
+        if (this.isAttacking) {
             ctx.fillStyle = "red";
             ctx.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height);
         }
@@ -53,8 +53,10 @@ class Fighter extends Sprite {
             width: 125,
             height: 50
         }
+        this.isAttacking
+        this.attackCoolDown = 500
+        this.onAttackingCoolDown
 
-        
     }
 
     update() {
@@ -85,6 +87,14 @@ class Fighter extends Sprite {
     jump() {
         if (!this.onGround) return
         this.velocity.y = -16
+    }
+    attack() {
+        if (this.onAttackingCoolDown) return
+        this.isAttacking = true
+
+        setTimeout(() => {
+            this.isAttacking = false
+        }, 100)
     }
 }
 
