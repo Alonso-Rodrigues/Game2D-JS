@@ -7,7 +7,8 @@ const keys = {
         pressed: false
     },
     w: {
-        pressed: false
+        pressed: false,
+        hold: false
     },
     space: {
         pressed: false
@@ -58,6 +59,7 @@ window.addEventListener("keyup", e => {
         case "ArrowUp":
         case "w":
             keys.w.pressed = false
+            keys.w.hold = false
             break
     }
 })
@@ -75,8 +77,9 @@ function handleControls() {
         if (keys.d.pressed && ["d", "ArrowRight"].includes(player.lastKeyPressed)) {
             player.velocity.x = 1.5 * 3.4 // Movimenta o jogador para a direita
         }
-        if (keys.w.pressed) {
-            player.velocity.y = -7 // Faz o jogador pular
+        if (keys.w.pressed && !keys.w.hold) {
+            player.jump()
+            keys.w.hold = true
         }
     }
 }
