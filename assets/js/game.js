@@ -24,8 +24,10 @@ function animate() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
+    background.update()
     // Desenha o sprite `player` no canvas
     player.update();
+    
     // player2.update();
     handleControls();
     // Obtém o tempo atual em milissegundos

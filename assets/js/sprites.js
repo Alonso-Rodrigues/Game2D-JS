@@ -1,21 +1,41 @@
 const gravity = 0.6
+const backgroundSpritePath = "../assets/img/background.png"
+
 class Sprite {
     // O construtor recebe um objeto com as propriedades `position`, `dimensions` e `velocity`
-    constructor({ position, dimensions, velocity }) {
+    constructor({ position, dimensions, velocity, source }) {
         // Define a posição inicial do sprite
         this.position = position;
         // Define a largura do sprite
-        this.width = dimensions.width;
+        this.width = dimensions?.width;
         // Define a altura do sprite
-        this.height = dimensions.height;
+        this.height = dimensions?.height;
         // Define a velocidade do sprite
         this.velocity = velocity;
+
+        if (source) {
+            this.image = new Image()
+            this.image.src = source
+
+            this.width = this.image.width
+            this.height = this.image.height
+        }
     }
 
     // Método para desenhar o sprite no canvas
     draw() {
-        ctx.fillStyle = "white"; // Define a cor do sprite
-        ctx.fillRect(this.position.x, this.position.y, this.width, this.height); // Desenha um retângulo preenchido com a cor definida
+        if (this.image) {
+            ctx.drawImage(
+                this.image,
+                this.position.x,
+                this.position.y,
+                this.width,
+                this.height
+            )            
+        } else {
+            ctx.fillStyle = "white"; // Define a cor do sprite
+            ctx.fillRect(this.position.x, this.position.y, this.width, this.height); // Desenha um retângulo preenchido com a cor definida
+        }
         if (this.isAttacking) {
             ctx.fillStyle = "red";
             ctx.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height);
@@ -60,7 +80,7 @@ class Fighter extends Sprite {
 
     update() {
         // Verifica se o sprite atingiu o chão do canvas
-        if (Math.ceil(this.position.y + this.height >= canvas.height)) {
+        if (Math.ceil(this.position.y + this.height) >= canvas.height) {
             this.onGround = true
         } else {
             this.onGround = false
@@ -118,19 +138,26 @@ const player = new Fighter({
     }
 });
 
-const player2 = new Fighter({
+// const player2 = new Fighter({
+//     position: {
+//         x: 500,
+//         y: 20
+//     },
+//     dimensions: {
+//         width: 50,
+//         height: 200
+//     },
+//     velocity: {
+//         x: 0,
+//         y: 0
+//     }
+// });
+
+const background = new Sprite({
     position: {
-        x: 500,
-        y: 20
-    },
-    dimensions: {
-        width: 50,
-        height: 200
-    },
-    velocity: {
         x: 0,
         y: 0
-    }
-});
-
+    },
+    source: backgroundSpritePath
+})
 
