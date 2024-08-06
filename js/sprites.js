@@ -56,7 +56,6 @@ class Fighter extends Sprite {
         this.isAttacking
         this.attackCoolDown = 500
         this.onAttackingCoolDown
-
     }
 
     update() {
@@ -91,10 +90,15 @@ class Fighter extends Sprite {
     attack() {
         if (this.onAttackingCoolDown) return
         this.isAttacking = true
+        this.onAttackingCoolDown = true
 
         setTimeout(() => {
             this.isAttacking = false
         }, 100)
+
+        setTimeout(() => {
+            this.onAttackingCoolDown = false
+        }, this.attackCoolDown)
     }
 }
 
