@@ -1,35 +1,41 @@
 const gravity = 0.6
 const backgroundSpritePath = "../assets/img/background.png"
+const defautObjectSpritePath = "../assets/img/square.svg"
+
 
 class Sprite {
     // O construtor recebe um objeto com as propriedades `position`, `dimensions` e `velocity`
-    constructor({ position, dimensions, velocity, source, scale, offset, sprites }) {
+    constructor({ position, velocity, source, scale, offset, sprites }) {
         // Define a posição inicial do sprite
         this.position = position;
-        // Define a largura do sprite
-        this.width = dimensions?.width;
-        // Define a altura do sprite
-        this.height = dimensions?.height;
         // Define a velocidade do sprite
         this.velocity = velocity;
 
         this.scale = scale || 1
         this.image = new Image()
-        this.image.src = source
+        this.image.src = source || defautObjectSpritePath
+
         this.width = this.image.width * this.scale
         this.height = this.image.height * this.scale
+
         this.offset = offset || {
             x: 0,
             y: 0
         }
+
         this.sprites = sprites || {
-            indle: {
+            idle: {
                 src: this.image.src,
-                totalSpritesFrame: 1
+                totalSpritesFrames: 1,
+                framesPerSpritesFrames: 1
             }
         }
-        this.currentSprite = this.sprites.indle
+        this.currentSprite = this.sprites.idle
 
+        this.elapseTime = 0
+        this.currentSpriteFrame = 0
+        this.totalSpritesFrames = this.sprites.idle.totalSpritesFrames
+        this.framesPerSpritesFrames = this.sprites.idle.totalSpritesFrames
 
         // if (source) {
         //     this.image = new Image()
@@ -40,29 +46,77 @@ class Sprite {
         // }
     }
 
+    setSprite(sprite) {
+        this.currentSprite = this.sprites[sprite]
+        if (!this.currentSprite) {
+            this.currentSprite = this.sprites.idle
+        }
+    }
+
+    loadSprite(sprite) {
+        let previousSprite = this.image.src
+        this.image = new Image()
+        this.image.src = this.currentSprite.src
+        this.width = this.image.width * this.scale
+        this.height = this.image.height * this.scale
+        this.totalSpritesFrames = this.currentSprite.totalSpritesFrames
+        this.framesPerSpritesFrames = this.currentSprite.framesPerSpritesFrames
+        let newSprite = this.image.src
+        if (previousSprite != newSprite) {
+            let previousSpriteImage = new Image()
+            previousSpriteImage.src = previousSprite
+            this.position.y += (previousSpriteImage.height - this.image.height) * this.scale
+        }
+    }
+
     // Método para desenhar o sprite no canvas
     draw() {
-        if (this.image) {
-            ctx.drawImage(
-                this.image,
-                this.position.x,
-                this.position.y,
-                this.width,
-                this.height
-            )            
-        } else {
-            ctx.fillStyle = "white"; // Define a cor do sprite
-            ctx.fillRect(this.position.x, this.position.y, this.width, this.height); // Desenha um retângulo preenchido com a cor definida
-        }
-        if (this.isAttacking) {
-            ctx.fillStyle = "red";
-            ctx.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height);
+        // if (this.image) {
+        //     ctx.drawImage(
+        //         this.image,
+        //         this.position.x,
+        //         this.position.y,
+        //         this.width,
+        //         this.height
+        //     )
+        // } else {
+        //     ctx.fillStyle = "white"; // Define a cor do sprite
+        //     ctx.fillRect(this.position.x, this.position.y, this.width, this.height); // Desenha um retângulo preenchido com a cor definida
+        // }
+        // if (this.isAttacking) {
+        //     ctx.fillStyle = "red";
+        //     ctx.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height);
+        // }
+
+        ctx.imageSmoothingEnabled = false
+        ctx.drawImage(
+            this.image,
+            this.currentSpriteFrame * this.image.width / this.totalSpritesFrames,
+            0,
+            this.image.width / this.totalSpritesFrames,
+            this.image.height,
+            0,
+            0,
+            this.width / this.totalSpritesFrames,
+            this.height
+        )
+    }
+
+    animate() {
+        this.elapseTime++
+        if (this.elapseTime >= this.framesPerSpritesFrames) {
+            this.currentSpriteFrame++
+            if (this.currentSpriteFrame >= this.totalSpritesFrames) {
+                this.currentSpriteFrame = 0
+            }
+            this.elapseTime = 0
         }
     }
 
     // Método para atualizar a posição do sprite
     update() {
-        this.draw();
+        this.draw()
+        this.animate()
     }
 }
 
@@ -70,33 +124,38 @@ class Fighter extends Sprite {
     constructor({
         position,
         velocity,
-        dimensions
+        scale,
+        sprites
     }) {
         super({
             position,
             velocity,
-            dimensions
+            scale,
+            sprites
         })
 
         this.velocity = velocity
-        this.width = dimensions.width
-        this.height = dimensions.height
+
         this.lastKeyPressed
         this.onGround
-        this.attackBox = {
-            position: {
-                x: this.position.x,
-                y: this.position.y,
-            },
-            width: 125,
-            height: 50
-        }
+
         this.isAttacking
         this.attackCoolDown = 500
         this.onAttackingCoolDown
     }
 
     update() {
+        // this.attackBox.position.x = this.position.x
+        // this.attackBox.position.y = this.position.y
+
+        this.gravity()
+        this.loadSprite()
+
+        // Desenha o sprite atualizado
+        this.draw()
+        this.animate()
+    }
+    gravity() {
         // Verifica se o sprite atingiu o chão do canvas
         if (Math.ceil(this.position.y + this.height) >= canvas.height) {
             this.onGround = true
@@ -114,12 +173,6 @@ class Fighter extends Sprite {
         // Atualiza a posição do sprite com base na velocidade
         this.position.x += this.velocity.x;
         this.position.y += this.velocity.y;
-
-        this.attackBox.position.x = this.position.x
-        this.attackBox.position.y = this.position.y
-
-        // Desenha o sprite atualizado
-        this.draw();
     }
     jump() {
         if (!this.onGround) return
@@ -146,14 +199,24 @@ const player = new Fighter({
         x: 100,
         y: 0
     },
-    dimensions: {
-        width: 50,
-        height: 150
-    },
+    // dimensions: {
+    //     width: 50,
+    //     height: 150
+    // },
     velocity: {
         x: 0,
         y: 10
-    }
+    },
+    sprites: {
+        idle: {
+            src: "../assets/img/idle.png",
+            totalSpritesFrames: 11,
+            framesPerSpritesFrames: 18,
+
+        }
+    },
+    scale: 4
+
 });
 
 // const player2 = new Fighter({

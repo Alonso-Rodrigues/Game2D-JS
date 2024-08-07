@@ -72,6 +72,8 @@ window.addEventListener("keyup", e => {
 
 // Função para lidar com os controles do jogador
 function handleControls() {
+    player.setSprite("idle")
+    if(!player.onGround) player.setSprite("jumping")
     moviments()
     attacks()
 
