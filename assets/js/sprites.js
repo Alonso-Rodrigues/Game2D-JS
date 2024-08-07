@@ -14,7 +14,6 @@ class Sprite {
         this.scale = scale || 1
         this.image = new Image()
         this.image.src = source || defautObjectSpritePath
-
         this.width = this.image.width * this.scale
         this.height = this.image.height * this.scale
 
@@ -27,23 +26,15 @@ class Sprite {
             idle: {
                 src: this.image.src,
                 totalSpritesFrames: 1,
-                framesPerSpritesFrames: 1
+                framesPerSpritesFrame: 1
             }
         }
+        
         this.currentSprite = this.sprites.idle
-
-        this.elapseTime = 0
         this.currentSpriteFrame = 0
+        this.elapseTime = 0
         this.totalSpritesFrames = this.sprites.idle.totalSpritesFrames
-        this.framesPerSpritesFrames = this.sprites.idle.totalSpritesFrames
-
-        // if (source) {
-        //     this.image = new Image()
-        //     this.image.src = source
-
-        //     this.width = this.image.width
-        //     this.height = this.image.height
-        // }
+        this.framesPerSpriteFrame = this.sprites.idle.framesPerSpriteFrame
     }
 
     setSprite(sprite) {
@@ -53,42 +44,34 @@ class Sprite {
         }
     }
 
-    loadSprite(sprite) {
+    loadSprite() {
         let previousSprite = this.image.src
+
         this.image = new Image()
         this.image.src = this.currentSprite.src
         this.width = this.image.width * this.scale
         this.height = this.image.height * this.scale
+
         this.totalSpritesFrames = this.currentSprite.totalSpritesFrames
-        this.framesPerSpritesFrames = this.currentSprite.framesPerSpritesFrames
+        this.framesPerSpritesFrame = this.currentSprite.framesPerSpritesFrame
+
         let newSprite = this.image.src
-        if (previousSprite != newSprite) {
+        
+        if (previousSprite !== newSprite) {
             let previousSpriteImage = new Image()
             previousSpriteImage.src = previousSprite
+
             this.position.y += (previousSpriteImage.height - this.image.height) * this.scale
         }
     }
 
     // Método para desenhar o sprite no canvas
     draw() {
-        // if (this.image) {
-        //     ctx.drawImage(
-        //         this.image,
-        //         this.position.x,
-        //         this.position.y,
-        //         this.width,
-        //         this.height
-        //     )
-        // } else {
-        //     ctx.fillStyle = "white"; // Define a cor do sprite
-        //     ctx.fillRect(this.position.x, this.position.y, this.width, this.height); // Desenha um retângulo preenchido com a cor definida
-        // }
-        // if (this.isAttacking) {
-        //     ctx.fillStyle = "red";
-        //     ctx.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height);
-        // }
-
         ctx.imageSmoothingEnabled = false
+
+        ctx.save()
+        ctx.translate(this.position.x + this.offset.x, this.position.y + this.offset.y)
+       
         ctx.drawImage(
             this.image,
             this.currentSpriteFrame * this.image.width / this.totalSpritesFrames,
@@ -100,11 +83,13 @@ class Sprite {
             this.width / this.totalSpritesFrames,
             this.height
         )
+        ctx.restore()
     }
 
     animate() {
         this.elapseTime++
-        if (this.elapseTime >= this.framesPerSpritesFrames) {
+        
+        if (this.elapseTime >= this.framesPerSpritesFrame) {
             this.currentSpriteFrame++
             if (this.currentSpriteFrame >= this.totalSpritesFrames) {
                 this.currentSpriteFrame = 0
@@ -135,26 +120,13 @@ class Fighter extends Sprite {
         })
 
         this.velocity = velocity
-
         this.lastKeyPressed
         this.onGround
-
         this.isAttacking
         this.attackCoolDown = 500
         this.onAttackingCoolDown
     }
 
-    update() {
-        // this.attackBox.position.x = this.position.x
-        // this.attackBox.position.y = this.position.y
-
-        this.gravity()
-        this.loadSprite()
-
-        // Desenha o sprite atualizado
-        this.draw()
-        this.animate()
-    }
     gravity() {
         // Verifica se o sprite atingiu o chão do canvas
         if (Math.ceil(this.position.y + this.height) >= canvas.height) {
@@ -174,10 +146,21 @@ class Fighter extends Sprite {
         this.position.x += this.velocity.x;
         this.position.y += this.velocity.y;
     }
+
+    update() {
+        this.gravity()
+        this.loadSprite()
+
+        // Desenha o sprite atualizado
+        this.draw()
+        this.animate()
+    }
+
     jump() {
         if (!this.onGround) return
         this.velocity.y = -16
     }
+    
     attack() {
         if (this.onAttackingCoolDown) return
         this.isAttacking = true
@@ -199,10 +182,6 @@ const player = new Fighter({
         x: 100,
         y: 0
     },
-    // dimensions: {
-    //     width: 50,
-    //     height: 150
-    // },
     velocity: {
         x: 0,
         y: 10
@@ -211,28 +190,12 @@ const player = new Fighter({
         idle: {
             src: "../assets/img/idle.png",
             totalSpritesFrames: 11,
-            framesPerSpritesFrames: 18,
+            framesPerSpritesFrame: 18,
 
         }
     },
     scale: 4
-
 });
-
-// const player2 = new Fighter({
-//     position: {
-//         x: 500,
-//         y: 20
-//     },
-//     dimensions: {
-//         width: 50,
-//         height: 200
-//     },
-//     velocity: {
-//         x: 0,
-//         y: 0
-//     }
-// });
 
 const background = new Sprite({
     position: {

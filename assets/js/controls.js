@@ -73,7 +73,9 @@ window.addEventListener("keyup", e => {
 // Função para lidar com os controles do jogador
 function handleControls() {
     player.setSprite("idle")
-    if(!player.onGround) player.setSprite("jumping")
+    if (!player.onGround) player.setSprite("jumping")
+    if (player.isAttacking) player.setSprite("attacking")
+
     moviments()
     attacks()
 
@@ -82,13 +84,18 @@ function handleControls() {
         player.velocity.x = 0
         if (keys.a.pressed && ["a", "ArrowLeft"].includes(player.lastKeyPressed)) {
             player.velocity.x = -1.5 * 3.4 // Movimenta o jogador para a esquerda
+            if (!player.onGround) return
+            player.setSprite("running")
         }
         if (keys.d.pressed && ["d", "ArrowRight"].includes(player.lastKeyPressed)) {
             player.velocity.x = 1.5 * 3.4 // Movimenta o jogador para a direita
+            if (!player.onGround) return
+            player.setSprite("running")
         }
         if (keys.w.pressed && !keys.w.hold) {
             player.jump()
             keys.w.hold = true
+            player.setSprite("jumping")
         }
     }
 
