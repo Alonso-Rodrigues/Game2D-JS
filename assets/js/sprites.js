@@ -3,7 +3,7 @@ const backgroundSpritePath = "../assets/img/background.png"
 
 class Sprite {
     // O construtor recebe um objeto com as propriedades `position`, `dimensions` e `velocity`
-    constructor({ position, dimensions, velocity, source }) {
+    constructor({ position, dimensions, velocity, source, scale, offset, sprites }) {
         // Define a posição inicial do sprite
         this.position = position;
         // Define a largura do sprite
@@ -13,13 +13,31 @@ class Sprite {
         // Define a velocidade do sprite
         this.velocity = velocity;
 
-        if (source) {
-            this.image = new Image()
-            this.image.src = source
-
-            this.width = this.image.width
-            this.height = this.image.height
+        this.scale = scale || 1
+        this.image = new Image()
+        this.image.src = source
+        this.width = this.image.width * this.scale
+        this.height = this.image.height * this.scale
+        this.offset = offset || {
+            x: 0,
+            y: 0
         }
+        this.sprites = sprites || {
+            indle: {
+                src: this.image.src,
+                totalSpritesFrame: 1
+            }
+        }
+        this.currentSprite = this.sprites.indle
+
+
+        // if (source) {
+        //     this.image = new Image()
+        //     this.image.src = source
+
+        //     this.width = this.image.width
+        //     this.height = this.image.height
+        // }
     }
 
     // Método para desenhar o sprite no canvas
