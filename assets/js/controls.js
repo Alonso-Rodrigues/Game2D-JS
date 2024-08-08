@@ -84,11 +84,15 @@ function handleControls() {
         player.velocity.x = 0
         if (keys.a.pressed && ["a", "ArrowLeft"].includes(player.lastKeyPressed)) {
             player.velocity.x = -1.5 * 3.4 // Movimenta o jogador para a esquerda
+            player.facing = "left"
+
             if (!player.onGround) return
             player.setSprite("running")
         }
         if (keys.d.pressed && ["d", "ArrowRight"].includes(player.lastKeyPressed)) {
             player.velocity.x = 1.5 * 3.4 // Movimenta o jogador para a direita
+            player.facing = "right"
+
             if (!player.onGround) return
             player.setSprite("running")
         }

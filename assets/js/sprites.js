@@ -29,7 +29,7 @@ class Sprite {
                 framesPerSpritesFrame: 1
             }
         }
-        
+
         this.currentSprite = this.sprites.idle
         this.currentSpriteFrame = 0
         this.elapseTime = 0
@@ -56,7 +56,7 @@ class Sprite {
         this.framesPerSpritesFrame = this.currentSprite.framesPerSpritesFrame
 
         let newSprite = this.image.src
-        
+
         if (previousSprite !== newSprite) {
             let previousSpriteImage = new Image()
             previousSpriteImage.src = previousSprite
@@ -67,11 +67,13 @@ class Sprite {
 
     // Método para desenhar o sprite no canvas
     draw() {
-        ctx.imageSmoothingEnabled = false
+        const xScale = this.facing == "left" ? -1 : 1
 
+        ctx.imageSmoothingEnabled = false
         ctx.save()
         ctx.translate(this.position.x + this.offset.x, this.position.y + this.offset.y)
-       
+        ctx.scale(xScale, 1)
+
         ctx.drawImage(
             this.image,
             this.currentSpriteFrame * this.image.width / this.totalSpritesFrames,
@@ -80,7 +82,7 @@ class Sprite {
             this.image.height,
             0,
             0,
-            this.width / this.totalSpritesFrames,
+            this.width / this.totalSpritesFrames * xScale,
             this.height
         )
         ctx.restore()
@@ -88,7 +90,7 @@ class Sprite {
 
     animate() {
         this.elapseTime++
-        
+
         if (this.elapseTime >= this.framesPerSpritesFrame) {
             this.currentSpriteFrame++
             if (this.currentSpriteFrame >= this.totalSpritesFrames) {
@@ -160,7 +162,7 @@ class Fighter extends Sprite {
         if (!this.onGround) return
         this.velocity.y = -16
     }
-    
+
     attack() {
         if (this.onAttackingCoolDown) return
         this.isAttacking = true
@@ -186,15 +188,29 @@ const player = new Fighter({
         x: 0,
         y: 10
     },
+    scale: 4,
     sprites: {
         idle: {
             src: "../assets/img/idle.png",
             totalSpritesFrames: 11,
             framesPerSpritesFrame: 18,
-
-        }
-    },
-    scale: 4
+        },
+        running: {
+            src: "../assets/img/running.png",
+            totalSpritesFrames: 10,
+            framesPerSpritesFrame: 8,
+        },
+        jumping: {
+            src: "../assets/img/jumping.png",
+            totalSpritesFrames: 4,
+            framesPerSpritesFrame: 8,
+        },
+        attacking: {
+            src: "../assets/img/attacking.png",
+            totalSpritesFrames: 7,
+            framesPerSpritesFrame: 8,
+        },
+    }
 });
 
 const background = new Sprite({
