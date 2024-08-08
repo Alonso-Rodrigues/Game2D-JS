@@ -38,7 +38,7 @@ function animate() {
         background.update()
         // Desenha o sprite `player` no canvas
         player.update();
-
+    
         lag -= frameTime
     }
 
