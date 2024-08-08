@@ -1,4 +1,5 @@
 const gravity = 0.6
+const floorHeight = 96
 const backgroundSpritePath = "../assets/img/background.png"
 const defautObjectSpritePath = "../assets/img/square.svg"
 
@@ -131,14 +132,14 @@ class Fighter extends Sprite {
 
     gravity() {
         // Verifica se o sprite atingiu o chão do canvas
-        if (Math.ceil(this.position.y + this.height) >= canvas.height) {
+        if (Math.ceil(this.position.y + this.height) >= canvas.height - floorHeight) {
             this.onGround = true
         } else {
             this.onGround = false
         }
         // Ajusta a posição y para o chão do canvas
-        if (this.position.y + this.height > canvas.height) {
-            this.position.y = canvas.height - this.height
+        if (this.position.y + this.height > canvas.height - floorHeight) {
+            this.position.y = canvas.height - this.height - floorHeight
             this.velocity.y = 0
         } else {
             // Aplica a gravidade à velocidade y
